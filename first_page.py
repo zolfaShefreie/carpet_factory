@@ -30,6 +30,30 @@ class Ui_Form(object):
         ui_address = add_address.Ui_Form()
         ui_address.setupUi(address_page)
         address_page.show()
+        ui_address.sent_data.connect(self.get_address_data)
+        
+    @pyqtSlot(list,list,list)    
+    def get_address_data(self,fac,ins,edge):
+        self.data.factory_func.address.fac_nodes=fac
+        self.data.factory_func.address.inst_nodes=ins
+        self.data.factory_func.address.edges=edge
+        edges_list=self.data.factory_func.address.edgets_list()
+        nodes=self.data.factory_func.address.fac_nodes+self.data.factory_func.address.inst_nodes
+        G=nx.Graph()
+        G.add_nodes_from(nodes)
+        G.add_edges_from(edges_list)
+        
+        color=[]
+        for i in range(0,len(self.data.factory_func.address.fac_nodes)):
+            color.append('red')
+        for i in range(0,len(self.data.factory_func.address.inst_nodes)):
+            color.append('blue')
+        
+        nx.draw_circular(G,node_color = color,with_labels=True,node_size=1000,alpha=1)
+        plt.savefig("./Graph.png", format="PNG")
+#         img=QtGui.QImage("./Graph.png")
+#         pic=QtGui.QPixmap.fromImage(img)
+#         pixmap5 = pic.scaled(self.label.width(), self.label.height())
     
     def setupUi(self, Form):
         Form.setObjectName("Form")

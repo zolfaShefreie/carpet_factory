@@ -16,6 +16,9 @@ class Ui_Form(object):
     ins_list=[]
     edges=[]
     
+    # signals
+    sent_data=QtCore.pyqtSlot(list,list,list)
+    
     def answer_add_click1(self):
         text=self.lineEdit.text()
         text=text.split()
@@ -112,6 +115,12 @@ class Ui_Form(object):
         message.show()
         message.buttonClicked.connect(message.close)
         self.stackedWidget.setCurrentIndex(3)
+        #emit signal
+        self.sent_data.emit(self.fac_list, self.ins_list, self.edges)
+        img=QtGui.QImage("./Graph.png")
+        pic=QtGui.QPixmap.fromImage(img)
+        pixmap5 = pic.scaled(self.label_13.width(), self.label_13.height())
+        self.label_13.setPixmap(pixmap5)
             
             
             
@@ -240,7 +249,7 @@ class Ui_Form(object):
         self.pushButton_3.clicked.connect(self.answer_add_click2)
         self.pushButton_4.clicked.connect(self.answer_next_click2)
         self.pushButton_5.clicked.connect(self.answer_add_edges)
-        self.pushButton_6.clicked.connect()
+        self.pushButton_6.clicked.connect(self.answer_next_click3)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate

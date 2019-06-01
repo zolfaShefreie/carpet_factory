@@ -1,7 +1,9 @@
-
+import address_graph
 import math
 class info_func:
+    
     picture_matrix=[]
+    address=address_graph.address_graph()
     def __init__(self):
         pass
     def default_matrix_multiplication(self,matrix_a,matrix_b):# if the  matices are 2*2 
