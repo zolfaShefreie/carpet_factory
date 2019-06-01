@@ -7,8 +7,30 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import data_base
+import add_address
 
 class Ui_Form(object):
+    #
+    data=data_base.dataBase()
+    
+    
+    #slots
+    def anwer_sale_button(self):
+        self.stackedWidget.setCurrentIndex(1)
+        
+    def anwer_fact_button(self):
+        self.stackedWidget.setCurrentIndex(2)
+        
+    def back_click(self):
+        self.stackedWidget.setCurrentIndex(0)
+        
+    def change_make_address(self):
+        address_page = QtWidgets.QWidget()
+        ui_address = add_address.Ui_Form()
+        ui_address.setupUi(address_page)
+        address_page.show()
+    
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(780, 451)
@@ -20,7 +42,7 @@ class Ui_Form(object):
         self.page.setObjectName("page")
         self.label = QtWidgets.QLabel(self.page)
         self.label.setGeometry(QtCore.QRect(260, 0, 541, 481))
-        self.label.setStyleSheet("background-image: url(C:/Users/Narm-gostar/Documents/GitHub/web-crawler/carpet_factory/background/1368_طرح های فرش.jpg);")
+        self.label.setStyleSheet("background-image: url(./background/background.jpg);")
         self.label.setText("")
         self.label.setObjectName("label")
         self.toolButton = QtWidgets.QToolButton(self.page)
@@ -36,7 +58,7 @@ class Ui_Form(object):
         self.page_4.setObjectName("page_4")
         self.label_3 = QtWidgets.QLabel(self.page_4)
         self.label_3.setGeometry(QtCore.QRect(260, 0, 511, 451))
-        self.label_3.setStyleSheet("background-image: url(C:/Users/Narm-gostar/Documents/GitHub/web-crawler/carpet_factory/background/1368_طرح های فرش.jpg);")
+        self.label_3.setStyleSheet("background-image: url(./background/background.jpg);")
         self.label_3.setText("")
         self.label_3.setObjectName("label_3")
         self.toolButton_8 = QtWidgets.QToolButton(self.page_4)
@@ -60,7 +82,7 @@ class Ui_Form(object):
         self.page_3.setObjectName("page_3")
         self.label_2 = QtWidgets.QLabel(self.page_3)
         self.label_2.setGeometry(QtCore.QRect(260, 0, 511, 451))
-        self.label_2.setStyleSheet("background-image: url(C:/Users/Narm-gostar/Documents/GitHub/web-crawler/carpet_factory/background/1368_طرح های فرش.jpg);")
+        self.label_2.setStyleSheet("background-image: url(./background/background.jpg);")
         self.label_2.setText("")
         self.label_2.setObjectName("label_2")
         self.toolButton_3 = QtWidgets.QToolButton(self.page_3)
@@ -86,13 +108,16 @@ class Ui_Form(object):
         self.back.setIconSize(QtCore.QSize(20, 20))
         self.back.setObjectName("back")
         self.stackedWidget.addWidget(self.page_3)
-        self.page_2 = QtWidgets.QWidget()
-        self.page_2.setObjectName("page_2")
-        self.stackedWidget.addWidget(self.page_2)
 
         self.retranslateUi(Form)
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Form)
+        
+        self.toolButton.clicked.connect(self.anwer_sale_button)
+        self.toolButton_2.clicked.connect(self.anwer_fact_button)
+        self.back.clicked.connect(self.back_click)
+        self.toolButton_7.clicked.connect(self.back_click)
+        self.toolButton_3.clicked.connect(self.change_make_address)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
