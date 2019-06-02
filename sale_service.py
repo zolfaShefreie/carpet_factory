@@ -5,7 +5,6 @@ class sale_service:
     
     def __init__(self):
         pass
-<<<<<<< HEAD
     
     def first_input(self,n):
         colors=[]
@@ -45,8 +44,6 @@ class sale_service:
                 
         return min
 
-        
-=======
 
     # this function finds the maximum number of carpets that can be purchased with a certain amount of money that user enters
 
@@ -90,5 +87,3 @@ class sale_service:
 
 
 
-        
->>>>>>> 5a80790deb9f549292c6587f74acfb4667a502d8

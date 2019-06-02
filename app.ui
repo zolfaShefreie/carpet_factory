@@ -141,7 +141,7 @@
      </property>
      <property name="icon">
       <iconset>
-       <normalon>icons8-back-button-48.png</normalon>
+       <normalon>../Documents/GitHub/web-crawler/carpet_factory/icons8-back-button-48.png</normalon>
       </iconset>
      </property>
      <property name="iconSize">
@@ -263,7 +263,7 @@
      </property>
      <property name="icon">
       <iconset>
-       <normalon>icons8-back-button-48.png</normalon>
+       <normalon>../Documents/GitHub/web-crawler/carpet_factory/icons8-back-button-48.png</normalon>
       </iconset>
      </property>
      <property name="iconSize">
