@@ -21,6 +21,7 @@ class Ui_Form(object):
     ins_list=[]
     edges=[]
 
+
     def money_button(self):
         self.stackedWidget.setCurrentIndex(7)
 
@@ -396,9 +397,18 @@ class Ui_Form(object):
         self.pushButton_10.setGeometry(QtCore.QRect(430, 120, 93, 28))
         self.pushButton_10.setObjectName("pushButton_10")
         self.label_20 = QtWidgets.QLabel(self.page_10)
-        self.label_20.setGeometry(QtCore.QRect(340, 230, 181, 61))
+        self.label_20.setGeometry(QtCore.QRect(170, 340, 461, 61))
         self.label_20.setText("")
         self.label_20.setObjectName("label_20")
+        self.label_25 = QtWidgets.QLabel(self.page_10)
+        self.label_25.setGeometry(QtCore.QRect(20, 180, 231, 41))
+        self.label_25.setObjectName("label_25")
+        self.lineEdit_8 = QtWidgets.QLineEdit(self.page_10)
+        self.lineEdit_8.setGeometry(QtCore.QRect(270, 190, 491, 41))
+        self.lineEdit_8.setObjectName("lineEdit_8")
+        self.pushButton_14 = QtWidgets.QPushButton(self.page_10)
+        self.pushButton_14.setGeometry(QtCore.QRect(430, 270, 93, 28))
+        self.pushButton_14.setObjectName("pushButton_14")
         self.stackedWidget.addWidget(self.page_10)
         self.page_11 = QtWidgets.QWidget()
         self.page_11.setObjectName("page_11")
@@ -491,8 +501,10 @@ class Ui_Form(object):
         self.label_17.setText(_translate("Form", " Please enter your budget:"))
         self.pushButton_8.setText(_translate("Form", "ok"))
         self.pushButton_9.setText(_translate("Form", "ok"))
-        self.label_19.setText(_translate("Form", " please enter address of image:"))
+        self.label_19.setText(_translate("Form", " please enter address of image1:"))
         self.pushButton_10.setText(_translate("Form", "ok"))
+        self.label_25.setText(_translate("Form", "  enter address of an image from stock:"))
+        self.pushButton_14.setText(_translate("Form", "ok"))
         self.label_22.setText(_translate("Form", "  Do you want to save this image?"))
         self.pushButton_11.setText(_translate("Form", "YES"))
         self.pushButton_12.setText(_translate("Form", "NO"))
