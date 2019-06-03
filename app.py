@@ -8,7 +8,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import data_base
-from test.test_set import faces
+#from test.test_set import faces
 from numpy.lib.function_base import insert
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -352,6 +352,32 @@ class Ui_Form(object):
         self.pushButton_7.setGeometry(QtCore.QRect(200, 420, 361, 23))
         self.pushButton_7.setObjectName("pushButton_7")
         self.stackedWidget.addWidget(self.page_7)
+
+        #ezafe shode
+        self.page_8 = QtWidgets.QWidget()
+        self.page_8.setObjectName("page_8")
+        self.label_17 = QtWidgets.QLabel(self.page_8)
+        self.label_17.setGeometry(QtCore.QRect(80, 60, 171, 41))
+        self.label_17.setObjectName("label_17")
+        self.lineEdit_4 = QtWidgets.QLineEdit(self.page_8)
+        self.lineEdit_4.setGeometry(QtCore.QRect(300, 70, 211, 41))
+        self.lineEdit_4.setObjectName("lineEdit_4")
+        self.pushButton_8 = QtWidgets.QPushButton(self.page_8)
+        self.pushButton_8.setGeometry(QtCore.QRect(370, 150, 93, 28))
+        self.pushButton_8.setObjectName("pushButton_8")
+        self.stackedWidget.addWidget(self.page_8)
+        self.page_9 = QtWidgets.QWidget()
+        self.page_9.setObjectName("page_9")
+        self.label_18 = QtWidgets.QLabel(self.page_9)
+        self.label_18.setGeometry(QtCore.QRect(140, 20, 521, 231))
+        self.label_18.setText("")
+        self.label_18.setObjectName("label_18")
+        self.pushButton_9 = QtWidgets.QPushButton(self.page_9)
+        self.pushButton_9.setGeometry(QtCore.QRect(350, 360, 93, 28))
+        self.pushButton_9.setObjectName("pushButton_9")
+        self.stackedWidget.addWidget(self.page_9)
+
+
         self.message=QtWidgets.QMessageBox()
 
         self.retranslateUi(Form)
@@ -400,6 +426,9 @@ class Ui_Form(object):
         self.pushButton_5.setText(_translate("Form", "add"))
         self.pushButton_6.setText(_translate("Form", "next"))
         self.pushButton_7.setText(_translate("Form", "ok"))
+        self.label_17.setText(_translate("Form", " Please enter your budget:"))
+        self.pushButton_8.setText(_translate("Form", "ok"))
+        self.pushButton_9.setText(_translate("Form", "ok"))
 
 
 if __name__ == "__main__":
