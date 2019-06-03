@@ -20,6 +20,13 @@ class Ui_Form(object):
     fac_list=[]
     ins_list=[]
     edges=[]
+
+    def money_button(self):
+        self.stackedWidget.setCurrentIndex(7)
+
+    def ok_budget(self):
+        self.stackedWidget.setCurrentIndex(8)
+
     
     def anwer_sale_button(self):
         self.stackedWidget.setCurrentIndex(1)
@@ -397,6 +404,10 @@ class Ui_Form(object):
         self.pushButton_5.clicked.connect(self.answer_add_edges)
         self.pushButton_6.clicked.connect(self.answer_next_click3)
         self.pushButton_7.clicked.connect(self.answer_ok_click)
+
+        #ezafe shode
+        self.toolButton_9.clicked.connect(self.money_button)
+        self.pushButton_8.clicked.connect(self.ok_budget)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
