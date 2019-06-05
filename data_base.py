@@ -4,23 +4,28 @@ import os
 import ast
 
 class dataBase:
+    # paini ham zakhire  kon img_path
     img_path=[]
+    # {name:[price,address_file]}
     img_and_price={}
     factory_func=factory_info_action.info_func()
     sale_func=sale_service.sale_service()
     def __init__(self):
-        path = os.getcwd()
-        img_dir=os.path.join(path,"img")
-        if img_dir in os.listdir(path):
-            for each in os.listdir(img_dir):
-                new_path=path+"/"+str(each)
-                self.img_path.append(new_path)
-        else:
-            try:
-                os.mkdir(img_dir)
-            except OSError:
-                pass
-        self.factory_func.address.load()
+        pass
+    
+    def load(self):
+#         path = os.getcwd()
+#         img_dir=os.path.join(path,"img")
+#         if img_dir in os.listdir(path):
+#             for each in os.listdir(img_dir):
+#                 new_path=path+"/"+str(each)
+#                 self.img_path.append(new_path)
+#         else:
+#             try:
+#                 os.mkdir(img_dir)
+#             except OSError:
+#                 pass
+#         self.factory_func.address.load()
         try:
             info=open("./info.txt", 'r')
             txt=info.read()

@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>22</number>
+    <number>19</number>
    </property>
    <widget class="QWidget" name="page">
     <widget class="QLabel" name="label">
@@ -1025,7 +1025,7 @@
       <string>address:</string>
      </property>
     </widget>
-    <widget class="QLabel" name="address">
+    <widget class="QLabel" name="address_1">
      <property name="geometry">
       <rect>
        <x>180</x>

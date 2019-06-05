@@ -129,7 +129,22 @@ class address_graph:
         
         return main_list
                     
+    def is_empty(self):
+        if len(self.fac_nodes)==0 or len(self.fac_nodes)==0:
+            return True 
+        return False
+    
+    def convert(self,dic_edget={}):
+        list_ed=dic_edget[next(iter(dic_edget))]
+        nodes=self.inst_nodes+self.fac_nodes
+        return_list=[]
+        for i in range(0,len(list_ed)-1):
+            ed=self.edges[nodes.index(list_ed[i])][nodes.index(list_ed[i+1])]
+            return_list.append((list_ed[i],list_ed[i],ed))
             
+        return return_list
+            
+        
                 
                 
                 

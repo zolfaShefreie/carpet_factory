@@ -13,6 +13,8 @@ from numpy.lib.function_base import insert
 import networkx as nx
 import matplotlib.pyplot as plt
 from PyQt5.Qt import QMessageBox
+import shutil
+import os
 
 class Ui_Form(object):
     
@@ -28,7 +30,7 @@ class Ui_Form(object):
     def ok_budget(self):
         self.stackedWidget.setCurrentIndex(8)
 
-    
+# main pages
     def anwer_sale_button(self):
         self.stackedWidget.setCurrentIndex(1)
         
@@ -40,6 +42,27 @@ class Ui_Form(object):
         
     def change_make_address(self):
         self.stackedWidget.setCurrentIndex(3)
+        
+    def find_nearest_path(self):
+        if self.data.factory_func.address.is_empty():
+            self.message.setText("the address doesn't exist")
+            self.message.setStandardButtons(QMessageBox.Ok)
+            self.message.show()
+            self.message.buttonClicked.connect(self.message.close)
+        else:
+            self.stackedWidget.setCurrentIndex(12)
+            for each in self.data.factory_func.address.inst_nodes:
+                self.list_inst_sale.addItem(str(each))
+            
+            self.img=QtGui.QImage("./Graph.png")
+            self.pic=QtGui.QPixmap.fromImage(self.img)
+            self.pixmap5 = self.pic.scaled(self.show_graph.width(), self.show_graph.height())
+            self.show_graph.setPixmap(self.pixmap5)
+    
+    def answer_delete(self):
+        self.stackedWidget.setCurrentIndex(18)
+        
+# add address
         
     def answer_add_click1(self):
         text=self.lineEdit.text()
@@ -158,7 +181,7 @@ class Ui_Form(object):
         self.data.factory_func.address.inst_nodes=self.ins_list
         self.data.factory_func.address.edges=self.edges
         edges_list=self.data.factory_func.address.edgets_list()
-        nodes=self.data.factory_func.address.fac_nodes+self.data.factory_func.address.inst_nodes
+        nodes=self.data.factory_func.address.inst_nodes+self.data.factory_func.address.fac_nodes
         G=nx.Graph()
         G.add_nodes_from(nodes)
         G.add_edges_from(edges_list)
@@ -178,6 +201,129 @@ class Ui_Form(object):
 
     def answer_ok_click(self):
         self.stackedWidget.setCurrentIndex(1)
+        
+    # sale: find nearest path
+    def select_a_node(self):
+        row = self.list_inst_sale.currentRow()
+        if row!=-1:
+            node=self.data.factory_func.address.inst_nodes[row]
+            path_dict=self.data.factory_func.address.shortest_path(node)
+            list_alaki=path_dict[next(iter(path_dict))]
+            self.address_1.setText(list_alaki)
+            self.nearest_factory.setText(list_alaki[-1])
+            self.stackedWidget.setCurrentIndex(13)
+            color_edget=[]
+            edges_list=self.data.factory_func.address.edgets_list()
+            nodes=self.data.factory_func.address.inst_nodes+self.data.factory_func.address.fac_nodes
+            G=nx.Graph()
+            G.add_nodes_from(nodes)
+            G.add_edges_from(edges_list)
+         
+            color=[]
+            for i in range(0,len(self.data.factory_func.address.fac_nodes)):
+                color.append('red')
+            for i in range(0,len(self.data.factory_func.address.inst_nodes)):
+                color.append('blue')
+                
+            list_convert=self.data.factory_func.address.convert(path_dict)
+            for each in edges_list:
+                if each in list_convert:
+                    color_edget.append('red')
+                else:
+                    color_edget.append('black')
+         
+            nx.draw_circular(G,edge_color=color_edget,node_color = color,with_labels=True,node_size=1000,alpha=1)
+            plt.savefig("./Graph_find.png", format="PNG")
+            self.img=QtGui.QImage("./Graph.png")
+            self.pic=QtGui.QPixmap.fromImage(self.img)
+            self.pixmap5 = self.pic.scaled(self.grath_to_factor.width(), self.grath_to_factor.height())
+            self.grath_to_factor.setPixmap(self.pixmap5)
+            
+        else:
+            self.message.setText("you didn't select one")
+            self.message.setStandardButtons(QMessageBox.Ok)
+            self.message.show()
+            self.message.buttonClicked.connect(self.message.close)
+ 
+    def answer_got_it(self):
+        self.stackedWidget.setCurrentIndex(1)
+        
+    # add delete edit
+    def add_new_ca(self):
+        self.stackedWidget.setCurrentIndex(20)
+        
+    def add_carpet_click(self):
+        file=self.lineEdit_11.text()
+        name=self.lineEdit_12.text()
+        price=self.lineEdit_13.text()
+        if len(name.split())==0:
+            self.message.setText("the name is empty")
+            self.message.setStandardButtons(QMessageBox.Ok)
+            self.message.show()
+            self.message.buttonClicked.connect(self.message.close)
+        else:
+            try:
+                price=int(price)
+                f=open(file)
+                f.close()
+                new=shutil.copy(file, './img')
+                self.data.img_and_price[name][0]=price
+                self.data.img_and_price[name][1]=str(new)
+            except Exception as error:
+                self.message.setText(str(error))
+                self.message.setStandardButtons(QMessageBox.Ok)
+                self.message.show()
+                self.message.buttonClicked.connect(self.message.close)
+    
+    def finish_adding(self):
+        self.stackedWidget.setCurrentIndex(2)
+      
+    def delete_edit(self):
+        self.stackedWidget.setCurrentIndex(19)
+        for each in self.data.img_and_price.keys():
+            self.listWidget_6.addItems(str(each))
+        
+    def delete_button_click(self):
+        row=self.listWidget_6.currentRow()
+        if row!=-1:
+            key=self.listWidget_6.item(row)
+            try:
+                os.remove(self.data.img_and_price[key.text()][1])
+            except Exception :
+                pass
+            del self.data.img_and_price[key.text()]
+
+        else:
+            self.message.setText("select the carpet")
+            self.message.setStandardButtons(QMessageBox.Ok)
+            self.message.show()
+            self.message.buttonClicked.connect(self.message.close)
+            
+    def finish_deleting(self):
+        self.stackedWidget.setCurrentIndex(2)
+        
+    def edit(self):
+        row=self.listWidget_6.currentRow()
+        txt=self.lineEdit_10.text()
+        if row!=-1:
+            try:
+                txt=int(txt)
+                key=self.listWidget_6.item(row)
+                self.data.img_and_price[key.text()][0]=txt
+            except Exception as error:
+                self.message.setText("the price is invalid")
+                self.message.setStandardButtons(QMessageBox.Ok)
+                self.message.show()
+                self.message.buttonClicked.connect(self.message.close)
+        else:
+            self.message.setText("select the carpet")
+            self.message.setStandardButtons(QMessageBox.Ok)
+            self.message.show()
+            self.message.buttonClicked.connect(self.message.close)
+                
+            
+            
+                  
   
     def setupUi(self, Form):
         Form.setObjectName("Form")
@@ -486,10 +632,10 @@ class Ui_Form(object):
         self.label_30 = QtWidgets.QLabel(self.page_14)
         self.label_30.setGeometry(QtCore.QRect(90, 160, 47, 13))
         self.label_30.setObjectName("label_30")
-        self.address = QtWidgets.QLabel(self.page_14)
-        self.address.setGeometry(QtCore.QRect(180, 160, 231, 221))
-        self.address.setText("")
-        self.address.setObjectName("address")
+        self.address_1 = QtWidgets.QLabel(self.page_14)
+        self.address_1.setGeometry(QtCore.QRect(180, 160, 231, 221))
+        self.address_1.setText("")
+        self.address_1.setObjectName("address_1")
         self.got = QtWidgets.QPushButton(self.page_14)
         self.got.setGeometry(QtCore.QRect(234, 400, 111, 23))
         self.got.setObjectName("got")
@@ -740,12 +886,14 @@ class Ui_Form(object):
         self.retranslateUi(Form)
         self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Form)
-        #main page
+        #main pages
         self.toolButton.clicked.connect(self.anwer_sale_button)
         self.toolButton_2.clicked.connect(self.anwer_fact_button)
         self.back.clicked.connect(self.back_click)
         self.toolButton_7.clicked.connect(self.back_click)
         self.toolButton_3.clicked.connect(self.change_make_address)
+        self.toolButton_10.clicked.connect(self.find_nearest_path)
+        self.toolButton_4.clicked.connect(self.answer_delete)
         #add_address
         self.pushButton.clicked.connect(self.answer_add_click1)
         self.pushButton_2.clicked.connect(self.answer_next_click1)
@@ -754,6 +902,19 @@ class Ui_Form(object):
         self.pushButton_5.clicked.connect(self.answer_add_edges)
         self.pushButton_6.clicked.connect(self.answer_next_click3)
         self.pushButton_7.clicked.connect(self.answer_ok_click)
+        # show the nearest path
+        self.pushButton_15.clicked.connect(self.select_a_node)
+        self.got.clicked.connect(self.answer_got_it)
+        #edit delete add a carpet
+        self.pushButton_26.clicked.connect(self.add_new_ca)
+        self.pushButton_27.clicked.connect(self.delete_edit)
+        self.pushButton_28.clicked.connect(self.add_carpet_click)
+        self.pushButton_29.clicked.connect(self.finish_adding)
+        self.pushButton_24.clicked.connect(self.delete_button_click)
+        self.pushButton_23.clicked.connect(self.edit)
+        self.pushButton_25.clicked.connect(self.finish_deleting)
+        
+        
 
         #ezafe shode
         self.toolButton_9.clicked.connect(self.money_button)
