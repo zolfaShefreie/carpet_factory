@@ -3,7 +3,10 @@ import math
 class info_func:
     
     picture_matrix=[]
+    result_grath_coloring=[]
+    min_list_coloring=[]
     address=address_graph.address_graph()
+    
     def __init__(self):
         pass
     def default_matrix_multiplication(self,matrix_a,matrix_b):# if the  matices are 2*2 
@@ -37,7 +40,7 @@ class info_func:
                 
         return matrix_c
     
-    def split_matrix(matrix_a): #divide the matrix into four submatrices
+    def split_matrix(self, matrix_a): #divide the matrix into four submatrices
         mid=len(matrix_a)//2
         c1=[]
         for i in range(0,mid):
@@ -205,21 +208,45 @@ class info_func:
                     matrix_b[i].pop()
                     
         return info_func.strassen(matrix_a,matrix_b)
-                    
-        
-                        
-                
-                
-                
-        
-        
-        
-            
-            
-        
-        
-        
-        
-    
 
+    
+    
+    def first_input(self,n):
+        colors=[]
+        for i in range(0,n):
+            colors.append(0)
         
+        return colors
+    
+    def promising(self,count=0,colors=[],edges=[]):
+        switch = True
+        j = 1;
+        while j < count and switch:
+            if edges[count][j] and colors[count] == colors[j]:
+                switch=False
+            j+=1
+            
+        return switch
+            
+    
+    def grath_coloring(self,count=0,colors=[],edges=[],num_of_color=1): 
+        if self.promising (count,colors,edges):
+            if count == num_of_color:
+                self.result_grath_coloring.appent(colors)
+            else:
+                for color in range(1,num_of_color+1):
+                    colors[count + 1] = color
+                    self.grath_coloring(count + 1,colors,edges,num_of_color)
+                    
+                    
+    def min_color(self,num_of_color=1):
+        # find min of max every result
+        min = num_of_color
+        for each in self.result_grath_coloring:
+            max_each=max(each)
+            if max_each < min:
+                min = max_each
+                self.min_list_coloring=each
+                
+        return min
+                    

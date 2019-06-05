@@ -12,17 +12,26 @@ import data_base
 from numpy.lib.function_base import insert
 import networkx as nx
 import matplotlib.pyplot as plt
+from matplotlib import colors as mcolors
 from PyQt5.Qt import QMessageBox
 import shutil
 import os
 
 class Ui_Form(object):
+    aliki_list=[]
     
     data=data_base.dataBase()
     fac_list=[]
     ins_list=[]
     edges=[]
-
+    part_carpet=[]
+    carpet_edge=[]
+    standard_carpet_edge=[]
+    color_list= dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
+    color_list=list(color_list.keys())
+    color_list=color_list[8:]
+    conut=0
+    min=0
 
     def money_button(self):
         self.stackedWidget.setCurrentIndex(7)
@@ -61,6 +70,9 @@ class Ui_Form(object):
     
     def answer_delete(self):
         self.stackedWidget.setCurrentIndex(18)
+        
+    def create_pattern(self):
+        self.stackedWidget.setCurrentIndex(14)
         
 # add address
         
@@ -149,6 +161,7 @@ class Ui_Form(object):
                 txt=int(txt)
                 if txt != 0:
                     self.edges[row][column]=txt
+                    self.edges[column][row]=txt
                 else:
                     self.message.setText("distance cant be 0")
                     self.message.setStandardButtons(QMessageBox.Ok)
@@ -321,8 +334,126 @@ class Ui_Form(object):
             self.message.show()
             self.message.buttonClicked.connect(self.message.close)
                 
+    # graph coloring
+    def add_node_part(self):
+        text=self.lineEdit_9.text()
+        text1=text.split()
+        text=text.lower()
+        if text not in self.part_carpet and len(text1)!=0:
+            self.part_carpet.append(text)
+            self.listWidget_2.addItem(text)
+         
+        elif text=="":
+            self.message.setText("line edit is empty")
+            self.message.setStandardButtons(QMessageBox.Ok)
+            self.message.show()
+            self.message.buttonClicked.connect(self.message.close)
+        else:
+            self.message.setText("this node added before")
+            self.message.setStandardButtons(QMessageBox.Ok)
+            self.message.show()
+            self.message.buttonClicked.connect(self.message.close)
             
+        self.lineEdit_9.clear()
+    def next_part(self):
+        if self.listWidget_2.count() == 0:
+            self.message.setText("the list of nodes is empty")
+            self.message.setStandardButtons(QMessageBox.Ok)
+            self.message.show()
+            self.message.buttonClicked.connect(self.message.close)
+        else:
+            self.stackedWidget.setCurrentIndex()
+            self.listWidget_2.clear(15)
+            list_alaki=[]
+            for i in range(0,len(self.part_carpet)):
+                list_alaki.append(0)
+                
+            for i in range(0,len(self.part_carpet)):
+                self.standard_carpet_edge.append(list_alaki)
+                
+            for each in self.part_carpet:
+                self.part1.addItem(str(each))
+                self.part2.addItem(str(each))
+    def add_edge_part(self):
+        row=self.part1.currentRow()
+        column=self.part2.currentRow()
+        if row!=-1 and column!=-1 and row!=column:
+            if (self.part_carpet[row],self.part_carpet[row]) not in self.carpet_edge and (self.part_carpet[row],self.part_carpet[row])not in self.carpet_edge:
+                self.carpet_edge.append((self.part_carpet[row],self.part_carpet[row]))
+                self.standard_carpet_edge[row][column]=1
+                self.standard_carpet_edge[column][row]=1
+            else:
+                self.message.setText("it added before")
+                self.message.setStandardButtons(QMessageBox.Ok)
+                self.message.show()
+                self.message.buttonClicked.connect(self.message.close)
+        else :
+            self.message.setText("you should select two different nodes")
+            self.message.setStandardButtons(QMessageBox.Ok)
+            self.message.show()
+            self.message.buttonClicked.connect(self.message.close)
+
+    def next_of_adding_edge_part(self):
+        self.part1.clear()
+        self.part2.clear()
+        self.stackedWidget.setCurrentIndex(16)
+        colors=self.data.factory_func.first_input(len(self.part_carpet))
+        self.data.factory_func.grath_coloring(colors,self.standard_carpet_edge,len(self.part_carpet))
+        result=self.data.factory_func.result_grath_coloring
+        self.min=self.data.factory_func.min_color(len(self.part_carpet))
+        self.label_32.setText(str(min))
+#         color_list= dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
+#         color_list=list(color_list.keys())
+#         color_list=color_list[8:]
+        for each in self.color_list:
+            self.list_color.addItems(str(each))
+     
+    def got_back(self):
+        self.stackedWidget.setCurrentIndex(2)
             
+    def add_color(self):
+        if self.count<self.min:
+        
+            row=self.list_color.currentRow()
+            if self.color_list[row] in self.aliki_list:
+                self.message.setText("it is chosen before")
+                self.message.setStandardButtons(QMessageBox.Ok)
+                self.message.show()
+                self.message.buttonClicked.connect(self.message.close)
+            else:
+                self.aliki_list.append(self.color_list[row])
+                self.count+=1
+        else:
+            self.pushButton_21.setText("finish")
+            self.stackedWidget.setCurrentIndex(17)
+            G=nx.Graph()
+            G.add_nodes_from(self.part_carpet)
+        #G.add_node("hi")
+            G.add_edges_from(self.carpet_edge)
+        #G.combinatorial_embedding_to_pos()
+    
+        
+            color=self.aliki_list
+
+        #G.combinatorial_embedding_to_pos()
+            nx.draw(G,node_color = color,with_labels=True,node_size=6000,alpha=1)
+            plt.savefig("Graph_coloring.png", format="PNG")
+            img=QtGui.QImage("./Graph_coloring.png")
+            pic=QtGui.QPixmap.fromImage(img)
+            pixmap5 = pic.scaled(self.graph_coloring.width(), self.graph_coloring.height())
+            self.graph_coloring.setPixmap(pixmap5)
+            
+    def ok_end(self):
+        self.count=0
+        self.list_color.clear()
+        self.min=0
+        self.standard_carpet_edge.clear()
+        self.part_carpet.clear()
+        self.carpet_edge.clear()
+        self.aliki_list.clear()
+        self.stackedWidget.setCurrentIndex(2)
+        
+        
                   
   
     def setupUi(self, Form):
@@ -894,6 +1025,7 @@ class Ui_Form(object):
         self.toolButton_3.clicked.connect(self.change_make_address)
         self.toolButton_10.clicked.connect(self.find_nearest_path)
         self.toolButton_4.clicked.connect(self.answer_delete)
+        self.toolButton_5.clicked.connect(self.create_pattern)
         #add_address
         self.pushButton.clicked.connect(self.answer_add_click1)
         self.pushButton_2.clicked.connect(self.answer_next_click1)
@@ -913,6 +1045,16 @@ class Ui_Form(object):
         self.pushButton_24.clicked.connect(self.delete_button_click)
         self.pushButton_23.clicked.connect(self.edit)
         self.pushButton_25.clicked.connect(self.finish_deleting)
+        #graph_coloring
+        self.pushButton_16.clicked.connect(self.add_node_part)
+        self.pushButton_17.clicked.connect(self.next_part)
+        self.pushButton_18.clicked.connect(self.add_edge_part)
+        self.pushButton_19.clicked.connect(self.next_of_adding_edge_part)
+        self.pushButton_20.clicked.connect(self.got_back)
+        self.pushButton_21.clicked.connect(self.add_color)
+        self.pushButton_22.clicked.connect(self.ok_end)
+        
+        
         
         
 
