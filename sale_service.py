@@ -10,7 +10,7 @@ class sale_service:
     def maximum_carpets(self,money,carpets_dic):
         prices=[]
         for each in carpets_dic.values():
-            prices.append(each)
+            prices.append(each[0])
         carpets_id=[]
         for each in carpets_dic.keys():
             carpets_id.append(each)
