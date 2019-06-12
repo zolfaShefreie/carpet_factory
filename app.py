@@ -33,6 +33,24 @@ class Ui_Form(object):
     conut=0
     min=0
 
+    #koole poshti
+    def get_budget(self):
+        budget_string=self.lineEdit_4.text()
+        budget_int=int(budget_string)
+        if len(self.data.img_and_price)==0:
+            self.message.setText("NO CARPETS YET")
+            self.message.setStandardButtons(QMessageBox.Ok)
+            self.message.show()
+            self.message.buttonClicked.connect(self.message.close)
+            self.stackedWidget.setCurrentIndex(7)
+        else:
+            a,b=self.data.sale_func.maximum_carpets(budget_int,self.data.img_and_price)
+            self.stackedWidget.setCurrentIndex(8)
+            self.label_18.setText("maximum carpets you can buy: "+str(a)+2*"\n"+"carpets: "+str(b))
+
+    def ok_button_9(self):
+        self.stackedWidget.setCurrentIndex(1)
+
     def money_button(self):
         self.stackedWidget.setCurrentIndex(7)
 
@@ -1061,6 +1079,9 @@ class Ui_Form(object):
         #ezafe shode
         self.toolButton_9.clicked.connect(self.money_button)
         self.pushButton_8.clicked.connect(self.ok_budget)
+        #@@@KOOLEPOSHTI
+        self.pushButton_8.clicked.connect(self.get_budget)
+        self.pushButton_9.clicked.connect(self.ok_button_9)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
