@@ -35,12 +35,17 @@ class dataBase:
         
         return matrix
     
-    def fill_with_black(self,matrix=[[0]]):
+    def fill_with_black_cut(self,matrix=[[0]]):
         #300 * 400
         if len(matrix)==0:
             raise Exception("the input isn't matrix")
         elif len(matrix[0])==0:
             raise Exception("it isn't 2d matrix")
+        if len(matrix)>300:
+            matrix=matrix[0:301]
+        if len(matrix[0])>400:
+            for i in range(0,len(matrix)):
+                matrix[i]=matrix[i][0:401]
         black_list=[]
         for i in range (0,len(matrix)):
             for j in range(len(matrix[0]),401):
