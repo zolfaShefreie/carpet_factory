@@ -4,6 +4,7 @@ import os
 import ast
 from PIL import Image
 import numpy as np
+from resizeimage import resizeimage
 
 class dataBase:
     # paini ham zakhire  kon img_path
@@ -14,6 +15,26 @@ class dataBase:
     sale_func=sale_service.sale_service()
     def __init__(self):
         pass
+    
+    def is_it_image(self,file):
+        try:
+            img=Image.open(file)
+        except Exception:
+            return False
+        return True
+    
+    def most_similar(self,matrix_base):
+        returns=[]
+        return_list=[]
+        for each in self.img_and_price.values():
+            matrix_sec=self.image_to_matrix(each[1])
+            returns.append(self.sale_func.min_penalty(matrix_base, matrix_sec))
+            
+        for i in range(0,3):
+            min=returns.index(sorted(returns)[i])
+            return_list.append(min)
+            
+        return return_list
     
     def image_to_matrix(self,file):
         try:
@@ -34,6 +55,14 @@ class dataBase:
                     matrix[i][j]=hex_color
         
         return matrix
+    
+    def resize_image(self,file):
+        file=str(file)
+        with open(file, 'r+b') as ff:
+            with Image.open(ff) as image:
+                cover = resizeimage.resize_cover(image, [400, 300],validate=False)
+                cover.save(file, image.format)
+        
     
     def fill_with_black_cut(self,matrix=[[0]]):
         #300 * 400

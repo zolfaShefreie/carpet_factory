@@ -16,6 +16,7 @@ from matplotlib import colors as mcolors
 from PyQt5.Qt import QMessageBox
 import shutil
 import os
+from PIL import Image
 
 class Ui_Form(object):
     aliki_list=[]
@@ -58,6 +59,16 @@ class Ui_Form(object):
         self.stackedWidget.setCurrentIndex(8)
 
 # main pages
+    
+    def search_by_pattern(self):
+        if len(self.data.img_and_price)>=3:
+            self.stackedWidget.setCurrentIndex(21)
+        else:
+            self.message.setText("there isn't enough carpet to do this")
+            self.message.setStandardButtons(QMessageBox.Ok)
+            self.message.show()
+            self.message.buttonClicked.connect(self.message.close)
+        
     def anwer_sale_button(self):
         self.stackedWidget.setCurrentIndex(1)
         
@@ -295,9 +306,9 @@ class Ui_Form(object):
         else:
             try:
                 price=int(price)
-                f=open(file)
-                f.close()
+                img=Image.open(file)
                 new=shutil.copy(file, './img')
+                self.data.resize_image(new)
                 self.data.img_and_price[name][0]=price
                 self.data.img_and_price[name][1]=str(new)
             except Exception as error:
@@ -470,6 +481,62 @@ class Ui_Form(object):
         self.carpet_edge.clear()
         self.aliki_list.clear()
         self.stackedWidget.setCurrentIndex(2)
+        
+    # sequence alignment
+    def get_the_path(self):
+        text=self.lineEdit_14.text()
+         
+        if text=="":
+            self.message.setText("line edit is empty")
+            self.message.setStandardButtons(QMessageBox.Ok)
+            self.message.show()
+            self.message.buttonClicked.connect(self.message.close)
+        
+        else:
+            try:
+                img_check=Image.open(text)
+                self.data.resize_image(text)
+                matrix=self.data.image_to_matrix(text)
+                return_list=self.data.most_similar(matrix)
+                
+                name=list(self.data.img_and_price)[return_list[0]]
+                price_file=list(self.data.img_and_price.values())[return_list[0]]
+                self.label_51.setText(str(name))
+                self.label_52.setText(str(price_file[0]))
+                img=QtGui.QImage(str(price_file[1]))
+                pic=QtGui.QPixmap.fromImage(img)
+                pixmap5 = pic.scaled(self.label_42.width(), self.label_42.height())
+                self.label_42.setPixmap(pixmap5)
+                
+                name=list(self.data.img_and_price)[return_list[1]]
+                price_file=list(self.data.img_and_price.values())[return_list[1]]
+                self.label_56.setText(str(name))
+                self.label_55.setText(str(price_file[0]))
+                img=QtGui.QImage(str(price_file[1]))
+                pic=QtGui.QPixmap.fromImage(img)
+                pixmap5 = pic.scaled(self.label_43.width(), self.label_43.height())
+                self.label_43.setPixmap(pixmap5)
+                
+                name=list(self.data.img_and_price)[return_list[2]]
+                price_file=list(self.data.img_and_price.values())[return_list[2]]
+                self.label_54.setText(str(name))
+                self.label_53.setText(str(price_file[0]))
+                img=QtGui.QImage(str(price_file[1]))
+                pic=QtGui.QPixmap.fromImage(img)
+                pixmap5 = pic.scaled(self.label_44.width(), self.label_44.height())
+                self.label_44.setPixmap(pixmap5)
+                
+                
+            except Exception as error:
+                self.lineEdit_14.clear()
+                self.message.setText(error)
+                self.message.setStandardButtons(QMessageBox.Ok)
+                self.message.show()
+                self.message.buttonClicked.connect(self.message.close)  
+                
+    def ok_to_finish(self):
+        self.stackedWidget.setCurrentIndex(1)             
+        
         
         
                   
@@ -1044,6 +1111,8 @@ class Ui_Form(object):
         self.toolButton_10.clicked.connect(self.find_nearest_path)
         self.toolButton_4.clicked.connect(self.answer_delete)
         self.toolButton_5.clicked.connect(self.create_pattern)
+        self.toolButton_8.clicked.connect(self.search_by_pattern)
+        
         #add_address
         self.pushButton.clicked.connect(self.answer_add_click1)
         self.pushButton_2.clicked.connect(self.answer_next_click1)
@@ -1072,10 +1141,10 @@ class Ui_Form(object):
         self.pushButton_21.clicked.connect(self.add_color)
         self.pushButton_22.clicked.connect(self.ok_end)
         
+        # sequence alignment
+        self.pushButton_30.clicked.connect(self.get_the_path)
+        self.pushButton_31.clicked.connect(self.ok_to_finish)
         
-        
-        
-
         #ezafe shode
         self.toolButton_9.clicked.connect(self.money_button)
         self.pushButton_8.clicked.connect(self.ok_budget)
