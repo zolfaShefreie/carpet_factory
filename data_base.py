@@ -48,13 +48,13 @@ class dataBase:
                 matrix[i]=matrix[i][0:401]
         black_list=[]
         for i in range (0,len(matrix)):
-            for j in range(len(matrix[0]),401):
+            for j in range(len(matrix[0]),400):
                 matrix[i].append("000000")
         
-        for  i in range(0,401):
+        for  i in range(0,400):
             black_list.append("000000")
         
-        for i in range(len(matrix),301):
+        for i in range(len(matrix),300):
             matrix.append(black_list)
         
         return matrix
