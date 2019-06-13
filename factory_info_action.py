@@ -271,25 +271,32 @@ class info_func:
         
         return colors
     
-    def promising(self,count=0,colors=[],edges=[]):
+    def first_input(self,n):
+        colors=[]
+        for i in range(0,n):
+            colors.append(0)
+        
+        return colors
+    
+    def promising(self,counts=0,colors=[],edges=[]):
         switch = True
-        j = 1
-        while j < count and switch:
-            if edges[count][j] and colors[count] == colors[j]:
+        j = 0
+        while j < counts and switch:
+            if edges[counts][j]==1 and colors[counts] == colors[j]:
                 switch=False
             j+=1
             
         return switch
             
     
-    def grath_coloring(self,count=0,colors=[],edges=[],num_of_color=1): 
-        if self.promising (count,colors,edges):
-            if count == num_of_color:
-                self.result_grath_coloring.append(colors)
+    def grath_coloring(self,i=-1,colors=[],edges=[],num_of_color=1): 
+        if self.promising (i,colors,edges):
+            if i == num_of_color-1:
+                self.result_grath_coloring.append([x for x in colors])
             else:
                 for color in range(1,num_of_color+1):
-                    colors[count + 1] = color
-                    self.grath_coloring(count + 1,colors,edges,num_of_color)
+                    colors[i + 1] = color
+                    self.grath_coloring(i + 1,colors,edges,num_of_color)
                     
                     
     def min_color(self,num_of_color=1):

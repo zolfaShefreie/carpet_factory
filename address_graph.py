@@ -112,20 +112,15 @@ class address_graph:
         i=0
         main_list=[]
         nodes=self.inst_nodes+self.fac_nodes
-        while i<len(self.edges):
-            j=0
-            while j<len(self.edges[i]):
+        for i  in range(0,len(nodes)):
+            for j in range(0,len(nodes)):
                 if self.edges[i][j]==0:
                     continue
-                listTotuple=[]
-                listTotuple.append(nodes[i])
-                listTotuple.append(nodes[j])
-                listTotuple.append(self.edges[i][j])
-                listTotuple=tuple(listTotuple)
-                if listTotuple not in main_list:
-                    main_list.append(listTotuple)
-                j+=1
-            i+=1
+                else:
+                    t=(nodes[i],nodes[j],self.edges[i][j])
+                    t1=(nodes[j],nodes[i],self.edges[i][j])
+                if t not in main_list and t1 not in main_list:
+                    main_list.append(t)
         
         return main_list
                     

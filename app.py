@@ -31,7 +31,7 @@ class Ui_Form(object):
     color_list= dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
     color_list=list(color_list.keys())
     color_list=color_list[8:]
-    conut=0
+    count=0
     min=0
 
     #koole poshti
@@ -167,12 +167,11 @@ class Ui_Form(object):
         else:
             self.stackedWidget.setCurrentIndex(5)
             self.listWidget_3.clear()
-            list_alaki=[]
-            for i in range(0,(len(self.fac_list)+len(self.ins_list)-1)):
-                list_alaki.append(0)
+            self.edges=[[0]*(len(self.fac_list)+len(self.ins_list)) for i in range((len(self.fac_list)+len(self.ins_list)))]
+#             list_alaki=[0 for i in range(0,(len(self.fac_list)+len(self.ins_list)))]
+#                 
+#             self.edges=[list_alaki for i in range(0,(len(self.fac_list)+len(self.ins_list)))]
                 
-            for i in range(0,(len(self.fac_list)+len(self.ins_list)-1)):
-                self.edges.append(list_alaki)
                 
             for each in self.ins_list:
                 self.listWidget_4.addItem(str(each))
@@ -184,8 +183,9 @@ class Ui_Form(object):
     def answer_add_edges(self):
         row=self.listWidget_4.currentRow()
         column=self.listWidget_5.currentRow()
-        if self.listWidget_4.currentRow()!= -1 and self.listWidget_5.currentRow() != -1 and self.lineEdit_3.text().split() != '':
+        if self.listWidget_4.currentRow()!= -1 and self.listWidget_5.currentRow() != -1 and self.lineEdit_3.text().split() != ''  and row!=column:
             txt=self.lineEdit_3.text()
+
             try:
                 txt=int(txt)
                 if txt != 0:
@@ -197,8 +197,8 @@ class Ui_Form(object):
                     self.message.show()
                     self.message.buttonClicked.connect(self.message.close)
                     self.lineEdit_3.clear()
-            except TypeError:
-                self.message.setText("distance must be number")
+            except Exception as error:
+                self.message.setText(str(txt))
                 self.message.setStandardButtons(QMessageBox.Ok)
                 self.message.show()
                 self.message.buttonClicked.connect(self.message.close)
@@ -208,8 +208,10 @@ class Ui_Form(object):
             self.message.setStandardButtons(QMessageBox.Ok)
             self.message.show()
             self.message.buttonClicked.connect(self.message.close)
+        self.lineEdit_3.clear()
             
     def answer_next_click3(self):
+        
         self.message.setText("the data is saved")
         self.message.setStandardButtons(QMessageBox.Ok)
         self.message.show()
@@ -218,15 +220,25 @@ class Ui_Form(object):
         self.stackedWidget.setCurrentIndex(6)
         self.listWidget_4.clear()
         self.listWidget_5.clear()
-        
+ 
+
         self.data.factory_func.address.fac_nodes=self.fac_list
         self.data.factory_func.address.inst_nodes=self.ins_list
         self.data.factory_func.address.edges=self.edges
-        edges_list=self.data.factory_func.address.edgets_list()
+        edges_list=self.data.factory_func.address.edges_list()
+        print(edges_list)
         nodes=self.data.factory_func.address.inst_nodes+self.data.factory_func.address.fac_nodes
+        print(nodes)
+
+        
         G=nx.Graph()
+
         G.add_nodes_from(nodes)
-        G.add_edges_from(edges_list)
+        try:
+            G.add_weighted_edges_from(edges_list)
+        except  Exception as e:
+            print(e)
+            print("33333333")
          
         color=[]
         for i in range(0,len(self.data.factory_func.address.fac_nodes)):
@@ -236,10 +248,14 @@ class Ui_Form(object):
          
         nx.draw_circular(G,node_color = color,with_labels=True,node_size=1000,alpha=1)
         plt.savefig("./Graph.png", format="PNG")
+        
+        
+
         self.img=QtGui.QImage("./Graph.png")
         self.pic=QtGui.QPixmap.fromImage(self.img)
         self.pixmap5 = self.pic.scaled(self.label_16.width(), self.label_16.height())
         self.label_16.setPixmap(self.pixmap5)
+
 
     def answer_ok_click(self):
         self.stackedWidget.setCurrentIndex(1)
@@ -259,7 +275,7 @@ class Ui_Form(object):
             nodes=self.data.factory_func.address.inst_nodes+self.data.factory_func.address.fac_nodes
             G=nx.Graph()
             G.add_nodes_from(nodes)
-            G.add_edges_from(edges_list)
+            G.add_weighted_edges_from(edges_list)
          
             color=[]
             for i in range(0,len(self.data.factory_func.address.fac_nodes)):
@@ -391,14 +407,9 @@ class Ui_Form(object):
             self.message.show()
             self.message.buttonClicked.connect(self.message.close)
         else:
-            self.stackedWidget.setCurrentIndex()
-            self.listWidget_2.clear(15)
-            list_alaki=[]
-            for i in range(0,len(self.part_carpet)):
-                list_alaki.append(0)
-                
-            for i in range(0,len(self.part_carpet)):
-                self.standard_carpet_edge.append(list_alaki)
+            self.stackedWidget.setCurrentIndex(15)
+            self.listWidget_2.clear()
+            self.standard_carpet_edge=[[0]*(len(self.part_carpet)) for i in range(len(self.part_carpet))]
                 
             for each in self.part_carpet:
                 self.part1.addItem(str(each))
@@ -407,8 +418,8 @@ class Ui_Form(object):
         row=self.part1.currentRow()
         column=self.part2.currentRow()
         if row!=-1 and column!=-1 and row!=column:
-            if (self.part_carpet[row],self.part_carpet[row]) not in self.carpet_edge and (self.part_carpet[row],self.part_carpet[row])not in self.carpet_edge:
-                self.carpet_edge.append((self.part_carpet[row],self.part_carpet[row]))
+            if (self.part_carpet[row],self.part_carpet[column]) not in self.carpet_edge and (self.part_carpet[column],self.part_carpet[row])not in self.carpet_edge:
+                self.carpet_edge.append((self.part_carpet[row],self.part_carpet[column]))
                 self.standard_carpet_edge[row][column]=1
                 self.standard_carpet_edge[column][row]=1
             else:
@@ -426,23 +437,28 @@ class Ui_Form(object):
         self.part1.clear()
         self.part2.clear()
         self.stackedWidget.setCurrentIndex(16)
-        colors=self.data.factory_func.first_input(len(self.part_carpet))
-        self.data.factory_func.grath_coloring(colors,self.standard_carpet_edge,len(self.part_carpet))
-        result=self.data.factory_func.result_grath_coloring
-        self.min=self.data.factory_func.min_color(len(self.part_carpet))
-        self.label_32.setText(str(min))
+        try:
+            colors=self.data.factory_func.first_input(len(self.part_carpet))
+            self.data.factory_func.grath_coloring(-1,colors,self.standard_carpet_edge,len(self.part_carpet))
+            result=self.data.factory_func.result_grath_coloring
+            self.min=self.data.factory_func.min_color(len(self.part_carpet))
+            self.label_32.setText(str(self.min))
+            
 #         color_list= dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
 #         color_list=list(color_list.keys())
 #         color_list=color_list[8:]
-        for each in self.color_list:
-            self.list_color.addItems(str(each))
+#             for each in self.color_list:
+#                 self.list_color.addItems(str(each))
+            self.list_color.addItems(self.color_list)
+        except Exception as e:
+            print(e)
      
     def got_back(self):
         self.stackedWidget.setCurrentIndex(2)
+        self.data.factory_func.result_grath_coloring.clear()
             
     def add_color(self):
         if self.count<self.min:
-        
             row=self.list_color.currentRow()
             if self.color_list[row] in self.aliki_list:
                 self.message.setText("it is chosen before")
@@ -452,6 +468,7 @@ class Ui_Form(object):
             else:
                 self.aliki_list.append(self.color_list[row])
                 self.count+=1
+        
         else:
             self.pushButton_21.setText("finish")
             self.stackedWidget.setCurrentIndex(17)
@@ -471,7 +488,7 @@ class Ui_Form(object):
             pic=QtGui.QPixmap.fromImage(img)
             pixmap5 = pic.scaled(self.graph_coloring.width(), self.graph_coloring.height())
             self.graph_coloring.setPixmap(pixmap5)
-            
+            self.data.factory_func.result_grath_coloring.clear()
     def ok_end(self):
         self.count=0
         self.list_color.clear()
