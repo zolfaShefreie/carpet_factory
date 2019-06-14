@@ -226,9 +226,7 @@ class Ui_Form(object):
         self.data.factory_func.address.inst_nodes=self.ins_list
         self.data.factory_func.address.edges=self.edges
         edges_list=self.data.factory_func.address.edges_list()
-        print(edges_list)
         nodes=self.data.factory_func.address.inst_nodes+self.data.factory_func.address.fac_nodes
-        print(nodes)
 
         
         G=nx.Graph()
@@ -258,21 +256,24 @@ class Ui_Form(object):
 
 
     def answer_ok_click(self):
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(2)
         
     # sale: find nearest path
     def select_a_node(self):
         row = self.list_inst_sale.currentRow()
         if row!=-1:
-            node=self.data.factory_func.address.inst_nodes[row]
-            path_dict=self.data.factory_func.address.shortest_path(node)
-            list_alaki=path_dict[next(iter(path_dict))]
-            self.address_1.setText(list_alaki)
-            self.nearest_factory.setText(list_alaki[-1])
-            self.stackedWidget.setCurrentIndex(13)
-            color_edget=[]
-            edges_list=self.data.factory_func.address.edgets_list()
-            nodes=self.data.factory_func.address.inst_nodes+self.data.factory_func.address.fac_nodes
+            try:
+                node=self.data.factory_func.address.inst_nodes[row]
+                path_dict=self.data.factory_func.address.shortest_path(node)
+                list_alaki=path_dict[next(iter(path_dict))]
+                self.address_1.setText(str(list_alaki))
+                self.nearest_factory.setText(list_alaki[-1])
+                self.stackedWidget.setCurrentIndex(13)
+                color_edget=[]
+                edges_list=self.data.factory_func.address.edges_list()
+                nodes=self.data.factory_func.address.inst_nodes+self.data.factory_func.address.fac_nodes
+            except Exception as e:
+                print(e)    
             G=nx.Graph()
             G.add_nodes_from(nodes)
             G.add_weighted_edges_from(edges_list)
@@ -292,7 +293,7 @@ class Ui_Form(object):
          
             nx.draw_circular(G,edge_color=color_edget,node_color = color,with_labels=True,node_size=1000,alpha=1)
             plt.savefig("./Graph_find.png", format="PNG")
-            self.img=QtGui.QImage("./Graph.png")
+            self.img=QtGui.QImage("./Graph_find.png")
             self.pic=QtGui.QPixmap.fromImage(self.img)
             self.pixmap5 = self.pic.scaled(self.grath_to_factor.width(), self.grath_to_factor.height())
             self.grath_to_factor.setPixmap(self.pixmap5)
@@ -325,21 +326,30 @@ class Ui_Form(object):
                 img=Image.open(file)
                 new=shutil.copy(file, './img')
                 self.data.resize_image(new)
+                self.data.img_and_price[name]=[0,'']
                 self.data.img_and_price[name][0]=price
                 self.data.img_and_price[name][1]=str(new)
+                
             except Exception as error:
                 self.message.setText(str(error))
                 self.message.setStandardButtons(QMessageBox.Ok)
                 self.message.show()
                 self.message.buttonClicked.connect(self.message.close)
+        self.lineEdit_11.clear()
+        self.lineEdit_12.clear()
+        self.lineEdit_13.clear()
     
     def finish_adding(self):
+        self.lineEdit_11.clear()
+        self.lineEdit_12.clear()
+        self.lineEdit_13.clear()
         self.stackedWidget.setCurrentIndex(2)
       
     def delete_edit(self):
+        self.listWidget_6.clear()
         self.stackedWidget.setCurrentIndex(19)
         for each in self.data.img_and_price.keys():
-            self.listWidget_6.addItems(str(each))
+            self.listWidget_6.addItem(str(each))
         
     def delete_button_click(self):
         row=self.listWidget_6.currentRow()
@@ -350,6 +360,7 @@ class Ui_Form(object):
             except Exception :
                 pass
             del self.data.img_and_price[key.text()]
+            self.listWidget_6.takeItem(row)
 
         else:
             self.message.setText("select the carpet")
