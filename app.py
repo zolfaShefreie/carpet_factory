@@ -33,27 +33,146 @@ class Ui_Form(object):
     color_list=color_list[8:]
     count=0
     min=0
+    
+    def change_pattern(self):
+        self.stackedWidget.setCurrentIndex(9)
+        
+    
+    def strasseen_gui(self):
+        address1=self.lineEdit_5.text()
+        address2=self.lineEdit_8.text()
+        
+        try:
+            image1=Image.open(address1)
+            image2=Image.open(address2)
+        except Exception as e:
+            print(e)
+        
+            
+        self.data.resize_image(address1)
+        self.data.resize_image(address2)
+          
+            
+        image_matrix1=self.data.image_to_matrix(address1)
+        image_matrix2=self.data.image_to_matrix(address2)
+        
+                    
+        for i in range(300):
+            for j in range(400):
+                image_matrix1[i][j]=int(image_matrix2[i][j],16)
+                    
+        for i in range(300):
+            for j in range(400):
+                image_matrix2[i][j]=int(image_matrix2[i][j],16)
+                    
+        for i in range(300,512):
+            image_matrix1.append([0 for k in range(512)])
+    
+        for i in range(300):
+            for j in range(400,512):
+                image_matrix1[i].append(0)
+                    
+        for i in range(300,512):
+            image_matrix2.append([0 for k in range(512)])
+    
+        for i in range(300):
+            for j in range(400,512):
+                image_matrix2[i].append(0)
+        try:        
+            result_strassen=self.data.factory_func.strassen(image_matrix1,image_matrix2)
+        
+            result_strassen=result_strassen[0:300]
+            for i in range(300):
+                result_strassen[i]=result_strassen[i][0:400]
+        
+            hex_result=[['']*400 for i in range(300)]
+   
+            for i in range(300):
+                for j in range(400):
+                    h=hex((result_strassen[i][j]))
+                    h=h[len(h)-6:]
+                    hex_result[i][j]=h
+            
+            self.data.matrix_to_image(hex_result)
+            self.img=QtGui.QImage("./strassen_result.jpg")
+            self.pic=QtGui.QPixmap.fromImage(self.img)
+            self.pixmap5 = self.pic.scaled(self.label_21.width(), self.label_21.height())
+            self.label_21.setPixmap(self.pixmap5)
+            self.stackedWidget.setCurrentIndex(10)
+            
+        except Exception  as e:
+            print(e)
+        
+#         f=open("./h.txt",'w')
+#         f.write(str(int_result))
+    def yse_save(self):
+        self.lineEdit_6.clear()
+        self.lineEdit_7.clear()
+        self.stackedWidget.setCurrentIndex(11)
+    
+    def no_save(self):
+        self.lineEdit_5.clear()
+        self.lineEdit_8.clear()
+        self.stackedWidget.setCurrentIndex(2)
+        
+    def ok_enter_price_name(self):
+        name=self.lineEdit_6.text()
+        price=self.lineEdit_7.text()
+        
+        try:
+            price=int(price)
+            img=Image.open('./strassen_result.jpg')
+            if name not in self.data.img_and_price :
+                os.rename('strassen_result.jpg',str(name)+'.jpg')
+                new=shutil.copy('./'+str(name)+'.jpg', './img')
+                self.data.resize_image(new)
+                self.data.img_and_price[name]=[0,'']
+                self.data.img_and_price[name][0]=price
+                self.data.img_and_price[name][1]=str(new)
+                self.stackedWidget.setCurrentIndex(2)
+            else:
+                self.message.setText("there is another carpet with this name please enter new name")
+                self.message.setStandardButtons(QMessageBox.Ok)
+                self.message.show()
+                self.message.buttonClicked.connect(self.message.close)
+        except Exception as e:
+            self.message.setText('price must be int')
+            self.message.setStandardButtons(QMessageBox.Ok)
+            self.message.show()
+            self.message.buttonClicked.connect(self.message.close)
+            
 
     #koole poshti
     def get_budget(self):
+        
         budget_string=self.lineEdit_4.text()
         budget_int=int(budget_string)
+#         if len(self.data.img_and_price)==0:
+#             self.message.setText("NO CARPETS YET")
+#             self.message.setStandardButtons(QMessageBox.Ok)
+#             self.message.show()
+#             self.message.buttonClicked.connect(self.message.close)
+#             self.stackedWidget.setCurrentIndex(7)
+        
+        a,b=self.data.sale_func.maximum_carpets(budget_int,self.data.img_and_price)
+        self.stackedWidget.setCurrentIndex(8)
+        txt=self.label_18.text()+" "+str(a)
+        self.label_18.setText(txt)
+        self.listWidget_7.addItems(b)
+#             self.label_18.setText("maximum carpets you can buy: "+str(a)+2*"\n"+"carpets: "+str(b))
+
+    def ok_button_9(self):
+        self.listWidget_7.clear()
+        self.stackedWidget.setCurrentIndex(1)
+
+    def money_button(self):
         if len(self.data.img_and_price)==0:
             self.message.setText("NO CARPETS YET")
             self.message.setStandardButtons(QMessageBox.Ok)
             self.message.show()
             self.message.buttonClicked.connect(self.message.close)
+        else:    
             self.stackedWidget.setCurrentIndex(7)
-        else:
-            a,b=self.data.sale_func.maximum_carpets(budget_int,self.data.img_and_price)
-            self.stackedWidget.setCurrentIndex(8)
-            self.label_18.setText("maximum carpets you can buy: "+str(a)+2*"\n"+"carpets: "+str(b))
-
-    def ok_button_9(self):
-        self.stackedWidget.setCurrentIndex(1)
-
-    def money_button(self):
-        self.stackedWidget.setCurrentIndex(7)
 
     def ok_budget(self):
         self.stackedWidget.setCurrentIndex(8)
@@ -323,12 +442,18 @@ class Ui_Form(object):
         else:
             try:
                 price=int(price)
-                img=Image.open(file)
-                new=shutil.copy(file, './img')
-                self.data.resize_image(new)
-                self.data.img_and_price[name]=[0,'']
-                self.data.img_and_price[name][0]=price
-                self.data.img_and_price[name][1]=str(new)
+                if name not in self.data.img_and_price:
+                    img=Image.open(file)
+                    new=shutil.copy(file, './img')
+                    self.data.resize_image(new)
+                    self.data.img_and_price[name]=[0,'']
+                    self.data.img_and_price[name][0]=price
+                    self.data.img_and_price[name][1]=str(new)
+                else:
+                    self.message.setText("there is another carpet with this name please enter new name")
+                    self.message.setStandardButtons(QMessageBox.Ok)
+                    self.message.show()
+                    self.message.buttonClicked.connect(self.message.close)
                 
             except Exception as error:
                 self.message.setText(str(error))
@@ -523,8 +648,8 @@ class Ui_Form(object):
         else:
             try:
                 img_check=Image.open(text)
-                self.data.resize_image(text)
-                matrix=self.data.image_to_matrix(text)
+                self.data.resize_image(text,save_file="./base_img_compare.jpg",w=40,h=30)
+                matrix=self.data.image_to_matrix("./base_img_compare.jpg")
                 return_list=self.data.most_similar(matrix)
                 
                 name=list(self.data.img_and_price)[return_list[0]]
@@ -755,84 +880,123 @@ class Ui_Form(object):
         self.page_8 = QtWidgets.QWidget()
         self.page_8.setObjectName("page_8")
         self.label_17 = QtWidgets.QLabel(self.page_8)
-        self.label_17.setGeometry(QtCore.QRect(80, 60, 171, 41))
+        self.label_17.setGeometry(QtCore.QRect(130, 170, 171, 21))
         self.label_17.setObjectName("label_17")
         self.lineEdit_4 = QtWidgets.QLineEdit(self.page_8)
-        self.lineEdit_4.setGeometry(QtCore.QRect(300, 70, 211, 41))
+        self.lineEdit_4.setGeometry(QtCore.QRect(350, 170, 251, 21))
         self.lineEdit_4.setObjectName("lineEdit_4")
         self.pushButton_8 = QtWidgets.QPushButton(self.page_8)
-        self.pushButton_8.setGeometry(QtCore.QRect(370, 150, 93, 28))
+        self.pushButton_8.setGeometry(QtCore.QRect(270, 300, 221, 28))
         self.pushButton_8.setObjectName("pushButton_8")
+        self.background_nearest_8 = QtWidgets.QLabel(self.page_8)
+        self.background_nearest_8.setGeometry(QtCore.QRect(170, 0, 491, 451))
+        self.background_nearest_8.setStyleSheet("background-image: url(./background/background3.jpg);")
+        self.background_nearest_8.setText("")
+        self.background_nearest_8.setObjectName("background_nearest_8")
+        self.background_nearest_8.raise_()
+        self.label_17.raise_()
+        self.lineEdit_4.raise_()
+        self.pushButton_8.raise_()
         self.stackedWidget.addWidget(self.page_8)
         self.page_9 = QtWidgets.QWidget()
         self.page_9.setObjectName("page_9")
-        self.label_18 = QtWidgets.QLabel(self.page_9)
-        self.label_18.setGeometry(QtCore.QRect(140, 20, 521, 231))
-        self.label_18.setText("")
-        self.label_18.setObjectName("label_18")
         self.pushButton_9 = QtWidgets.QPushButton(self.page_9)
-        self.pushButton_9.setGeometry(QtCore.QRect(350, 360, 93, 28))
+        self.pushButton_9.setGeometry(QtCore.QRect(450, 190, 93, 28))
         self.pushButton_9.setObjectName("pushButton_9")
+        self.listWidget_7 = QtWidgets.QListWidget(self.page_9)
+        self.listWidget_7.setGeometry(QtCore.QRect(60, 80, 256, 341))
+        self.listWidget_7.setObjectName("listWidget_7")
+        self.label_18 = QtWidgets.QLabel(self.page_9)
+        self.label_18.setGeometry(QtCore.QRect(60, 50, 281, 16))
+        self.label_18.setObjectName("label_18")
+        self.label_57 = QtWidgets.QLabel(self.page_9)
+        self.label_57.setGeometry(QtCore.QRect(270, 0, 511, 451))
+        self.label_57.setStyleSheet("background-image: url(./background/background1.jpg);")
+        self.label_57.setText("")
+        self.label_57.setObjectName("label_57")
+        self.label_57.raise_()
+        self.pushButton_9.raise_()
+        self.listWidget_7.raise_()
+        self.label_18.raise_()
         self.stackedWidget.addWidget(self.page_9)
 
         self.page_10 = QtWidgets.QWidget()
         self.page_10.setObjectName("page_10")
         self.label_19 = QtWidgets.QLabel(self.page_10)
-        self.label_19.setGeometry(QtCore.QRect(20, 50, 201, 21))
+        self.label_19.setGeometry(QtCore.QRect(70, 150, 131, 16))
         self.label_19.setObjectName("label_19")
         self.lineEdit_5 = QtWidgets.QLineEdit(self.page_10)
-        self.lineEdit_5.setGeometry(QtCore.QRect(230, 50, 531, 31))
+        self.lineEdit_5.setGeometry(QtCore.QRect(270, 150, 431, 21))
         self.lineEdit_5.setObjectName("lineEdit_5")
-        self.pushButton_10 = QtWidgets.QPushButton(self.page_10)
-        self.pushButton_10.setGeometry(QtCore.QRect(430, 120, 93, 28))
-        self.pushButton_10.setObjectName("pushButton_10")
-        self.label_20 = QtWidgets.QLabel(self.page_10)
-        self.label_20.setGeometry(QtCore.QRect(170, 340, 461, 61))
-        self.label_20.setText("")
-        self.label_20.setObjectName("label_20")
         self.label_25 = QtWidgets.QLabel(self.page_10)
-        self.label_25.setGeometry(QtCore.QRect(20, 180, 231, 41))
+        self.label_25.setGeometry(QtCore.QRect(70, 230, 141, 21))
         self.label_25.setObjectName("label_25")
         self.lineEdit_8 = QtWidgets.QLineEdit(self.page_10)
-        self.lineEdit_8.setGeometry(QtCore.QRect(270, 190, 491, 41))
+        self.lineEdit_8.setGeometry(QtCore.QRect(270, 230, 431, 21))
         self.lineEdit_8.setObjectName("lineEdit_8")
         self.pushButton_14 = QtWidgets.QPushButton(self.page_10)
-        self.pushButton_14.setGeometry(QtCore.QRect(430, 270, 93, 28))
+        self.pushButton_14.setGeometry(QtCore.QRect(300, 300, 111, 28))
         self.pushButton_14.setObjectName("pushButton_14")
+        self.label_20 = QtWidgets.QLabel(self.page_10)
+        self.label_20.setGeometry(QtCore.QRect(240, 70, 251, 20))
+        self.label_20.setObjectName("label_20")
+        self.label_58 = QtWidgets.QLabel(self.page_10)
+        self.label_58.setGeometry(QtCore.QRect(270, 0, 511, 451))
+        self.label_58.setStyleSheet("background-image: url(./background/background1.jpg);")
+        self.label_58.setText("")
+        self.label_58.setObjectName("label_58")
+        self.label_58.raise_()
+        self.label_19.raise_()
+        self.lineEdit_5.raise_()
+        self.label_25.raise_()
+        self.lineEdit_8.raise_()
+        self.pushButton_14.raise_()
+        self.label_20.raise_()
         self.stackedWidget.addWidget(self.page_10)
         self.page_11 = QtWidgets.QWidget()
         self.page_11.setObjectName("page_11")
         self.label_21 = QtWidgets.QLabel(self.page_11)
-        self.label_21.setGeometry(QtCore.QRect(150, 60, 441, 231))
+        self.label_21.setGeometry(QtCore.QRect(40, 20, 691, 271))
         self.label_21.setText("")
         self.label_21.setObjectName("label_21")
         self.label_22 = QtWidgets.QLabel(self.page_11)
-        self.label_22.setGeometry(QtCore.QRect(160, 340, 221, 21))
+        self.label_22.setGeometry(QtCore.QRect(140, 370, 221, 21))
         self.label_22.setObjectName("label_22")
         self.pushButton_11 = QtWidgets.QPushButton(self.page_11)
-        self.pushButton_11.setGeometry(QtCore.QRect(400, 340, 93, 28))
+        self.pushButton_11.setGeometry(QtCore.QRect(400, 370, 93, 28))
         self.pushButton_11.setObjectName("pushButton_11")
         self.pushButton_12 = QtWidgets.QPushButton(self.page_11)
-        self.pushButton_12.setGeometry(QtCore.QRect(510, 340, 93, 28))
+        self.pushButton_12.setGeometry(QtCore.QRect(500, 370, 93, 28))
         self.pushButton_12.setObjectName("pushButton_12")
         self.stackedWidget.addWidget(self.page_11)
         self.page_12 = QtWidgets.QWidget()
         self.page_12.setObjectName("page_12")
         self.label_23 = QtWidgets.QLabel(self.page_12)
-        self.label_23.setGeometry(QtCore.QRect(100, 70, 101, 21))
+        self.label_23.setGeometry(QtCore.QRect(140, 100, 101, 21))
         self.label_23.setObjectName("label_23")
         self.lineEdit_6 = QtWidgets.QLineEdit(self.page_12)
-        self.lineEdit_6.setGeometry(QtCore.QRect(250, 70, 341, 41))
+        self.lineEdit_6.setGeometry(QtCore.QRect(300, 100, 391, 21))
         self.lineEdit_6.setObjectName("lineEdit_6")
         self.label_24 = QtWidgets.QLabel(self.page_12)
-        self.label_24.setGeometry(QtCore.QRect(100, 240, 111, 31))
+        self.label_24.setGeometry(QtCore.QRect(140, 240, 111, 21))
         self.label_24.setObjectName("label_24")
         self.lineEdit_7 = QtWidgets.QLineEdit(self.page_12)
-        self.lineEdit_7.setGeometry(QtCore.QRect(250, 230, 341, 41))
+        self.lineEdit_7.setGeometry(QtCore.QRect(300, 240, 381, 21))
         self.lineEdit_7.setObjectName("lineEdit_7")
         self.pushButton_13 = QtWidgets.QPushButton(self.page_12)
-        self.pushButton_13.setGeometry(QtCore.QRect(360, 340, 93, 28))
+        self.pushButton_13.setGeometry(QtCore.QRect(360, 340, 111, 28))
         self.pushButton_13.setObjectName("pushButton_13")
+        self.background_nearest_9 = QtWidgets.QLabel(self.page_12)
+        self.background_nearest_9.setGeometry(QtCore.QRect(0, 0, 491, 451))
+        self.background_nearest_9.setStyleSheet("background-image: url(./background/background3.jpg);")
+        self.background_nearest_9.setText("")
+        self.background_nearest_9.setObjectName("background_nearest_9")
+        self.background_nearest_9.raise_()
+        self.label_23.raise_()
+        self.lineEdit_6.raise_()
+        self.label_24.raise_()
+        self.lineEdit_7.raise_()
+        self.pushButton_13.raise_()
         self.stackedWidget.addWidget(self.page_12)
         self.page_13 = QtWidgets.QWidget()
         self.page_13.setObjectName("page_13")
@@ -1130,6 +1294,10 @@ class Ui_Form(object):
         self.retranslateUi(Form)
         self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Form)
+        
+        self.message.setWindowTitle("system message")
+        #Form.setWindowTitle("carpet factory")
+        
         #main pages
         self.toolButton.clicked.connect(self.anwer_sale_button)
         self.toolButton_2.clicked.connect(self.anwer_fact_button)
@@ -1140,6 +1308,7 @@ class Ui_Form(object):
         self.toolButton_4.clicked.connect(self.answer_delete)
         self.toolButton_5.clicked.connect(self.create_pattern)
         self.toolButton_8.clicked.connect(self.search_by_pattern)
+        self.toolButton_6.clicked.connect(self.change_pattern)
         
         #add_address
         self.pushButton.clicked.connect(self.answer_add_click1)
@@ -1179,14 +1348,20 @@ class Ui_Form(object):
         #@@@KOOLEPOSHTI
         self.pushButton_8.clicked.connect(self.get_budget)
         self.pushButton_9.clicked.connect(self.ok_button_9)
+        
+        #strassen
+        self.pushButton_14.clicked.connect(self.strasseen_gui)
+        self.pushButton_11.clicked.connect(self.yse_save)
+        self.pushButton_12.clicked.connect(self.no_save)
+        self.pushButton_13.clicked.connect(self.ok_enter_price_name)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.toolButton.setText(_translate("Form", "sale services"))
         self.toolButton_2.setText(_translate("Form", "save  data"))
-        self.toolButton_8.setText(_translate("Form", "patten"))
-        self.toolButton_9.setText(_translate("Form", "moeny"))
+        self.toolButton_8.setText(_translate("Form", "search based on pattern"))
+        self.toolButton_9.setText(_translate("Form", "search based on moeny"))
         self.toolButton_10.setText(_translate("Form", "find nearest factory"))
         self.toolButton_3.setText(_translate("Form", "change or make address"))
         self.toolButton_4.setText(_translate("Form", "delete or edit"))
@@ -1211,15 +1386,16 @@ class Ui_Form(object):
         self.label_17.setText(_translate("Form", " Please enter your budget:"))
         self.pushButton_8.setText(_translate("Form", "ok"))
         self.pushButton_9.setText(_translate("Form", "ok"))
-        self.label_19.setText(_translate("Form", " please enter address of image1:"))
-        self.pushButton_10.setText(_translate("Form", "ok"))
-        self.label_25.setText(_translate("Form", "  enter address of an image from stock:"))
+        self.label_18.setText(_translate("Form", "max of number of carpet that you can buy is:"))
+        self.label_19.setText(_translate("Form", "  enter address of image1:"))
+        self.label_25.setText(_translate("Form", "  enter address of image 2:"))
         self.pushButton_14.setText(_translate("Form", "ok"))
+        self.label_20.setText(_translate("Form", "you can enter the path of current folder \'s  images"))
         self.label_22.setText(_translate("Form", "  Do you want to save this image?"))
         self.pushButton_11.setText(_translate("Form", "YES"))
         self.pushButton_12.setText(_translate("Form", "NO"))
-        self.label_23.setText(_translate("Form", " Enter name:"))
-        self.label_24.setText(_translate("Form", " Enter price:"))
+        self.label_23.setText(_translate("Form", "please  enter name:"))
+        self.label_24.setText(_translate("Form", " please enter price:"))
         self.pushButton_13.setText(_translate("Form", "ok"))
         self.label_27.setText(_translate("Form", "please choose the nearest interdrction to yoour location"))
         self.pushButton_15.setText(_translate("Form", "select"))

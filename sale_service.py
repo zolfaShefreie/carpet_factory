@@ -15,13 +15,12 @@ class sale_service:
                 
     
     def min_penalty(self,matrix_base=[['0']],matrix_sec=[['0']]):
-        matrix_base=self.two_d_to_1d(matrix_base)
-        matrix_sec=self.two_d_to_1d(matrix_sec)
+#         matrix_base=self.two_d_to_1d(matrix_base)
+#         matrix_sec=self.two_d_to_1d(matrix_sec)
         len_base=len(matrix_base)
         len_sec=len(matrix_sec)
         
-        list_alaki=[0 for i in range(0,len_base+1)]
-        opt=[list_alaki for i in range(0,len_sec+1)]
+        opt=[[0]*(len_base+1) for i in range(len_sec+1)]
         
         opt[len_sec][len_base]=0
         
@@ -42,7 +41,7 @@ class sale_service:
         
         for i in range(len_sec-1,-1,-1):
             for j in range(len_base-1,-1,-1):
-                if matrix_base[i]==matrix_sec[j]:
+                if matrix_base[j]==matrix_sec[i]:
                     penalty=0
                 else :
                     penalty=1

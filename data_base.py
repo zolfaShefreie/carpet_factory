@@ -14,7 +14,7 @@ class dataBase:
     factory_func=factory_info_action.info_func()
     sale_func=sale_service.sale_service()
     def __init__(self):
-        pass
+        self.load()
     
     def is_it_image(self,file):
         try:
@@ -27,12 +27,12 @@ class dataBase:
         returns=[]
         return_list=[]
         for each in self.img_and_price.values():
-            matrix_sec=self.image_to_matrix(each[1])
+            self.resize_image(each[1], save_file="./sec_img_compare.jpg", w=40, h=30)
+            matrix_sec=self.image_to_matrix("./sec_img_compare.jpg")
             returns.append(self.sale_func.min_penalty(matrix_base, matrix_sec))
             
         for i in range(0,3):
-            min=returns.index(sorted(returns)[i])
-            return_list.append(min)
+            return_list.append(returns.index(sorted(returns)[i]))
             
         return return_list
     
@@ -56,12 +56,14 @@ class dataBase:
         
         return matrix
     
-    def resize_image(self,file):
+    def resize_image(self,file,save_file="",w=400,h=300):
+        if save_file=="":
+            save_file=file
         file=str(file)
         with open(file, 'r+b') as ff:
             with Image.open(ff) as image:
-                cover = resizeimage.resize_cover(image, [400, 300],validate=False)
-                cover.save(file, image.format)
+                cover = resizeimage.resize_cover(image, [w, h],validate=False)
+                cover.save(save_file, image.format)
         
     
     def fill_with_black_cut(self,matrix=[[0]]):
@@ -103,9 +105,6 @@ class dataBase:
                     rgb_color=list(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
                     matrix[each][each1]=rgb_color
 
-#             matrix=np.array(matrix,dtype=np.uint8)
-#             img = Image.fromarray(matrix, 'RGB')
-#             img.save('my.jpg') 
             
         elif len(matrix[0][0])==8:
             for each in range(0,len(matrix)):
@@ -116,7 +115,7 @@ class dataBase:
                     
         matrix=np.array(matrix,dtype=np.uint8)
         img = Image.fromarray(matrix, 'RGB')
-        img.save('my.jpg')
+        img.save('strassen_result.jpg')
         
         
         
@@ -139,18 +138,21 @@ class dataBase:
             txt=info.read()
             self.img_and_price = ast.literal_eval(txt)
             info.close()
+            self.factory_func.address.load()
                 
         except OSError and FileNotFoundError:
             pass
 
             
-    def save_new_file(self,file_name,img):
-        pass
     
     def exit_save(self):
-        pass
+        self.save()
+        self.factory_func.address.save()
     
     def save(self):
         info=open("./info.txt", 'w')
         info.write(str(self.img_and_price))
         info.close()
+    
+    def __del__(self):
+        self.exit_save()
