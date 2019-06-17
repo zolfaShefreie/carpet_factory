@@ -90,8 +90,13 @@ class Ui_Form(object):
             for i in range(300):
                 for j in range(400):
                     h=hex((result_strassen[i][j]))
-                    h=h[len(h)-6:]
+                    h=h[2:]
+                    if len(h)<=6:
+                        h=h.zfill(6)
+                    else:
+                        h=h[len(h)-6:]
                     hex_result[i][j]=h
+            print('finish')
             
             self.data.matrix_to_image(hex_result)
             self.img=QtGui.QImage("./strassen_result.jpg")
@@ -122,6 +127,7 @@ class Ui_Form(object):
         try:
             price=int(price)
             img=Image.open('./strassen_result.jpg')
+            img.close()
             if name not in self.data.img_and_price :
                 os.rename('strassen_result.jpg',str(name)+'.jpg')
                 new=shutil.copy('./'+str(name)+'.jpg', './img')
@@ -136,6 +142,7 @@ class Ui_Form(object):
                 self.message.show()
                 self.message.buttonClicked.connect(self.message.close)
         except Exception as e:
+            print(e)
             self.message.setText('price must be int')
             self.message.setStandardButtons(QMessageBox.Ok)
             self.message.show()
