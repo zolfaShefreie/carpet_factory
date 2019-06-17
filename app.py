@@ -135,6 +135,7 @@ class Ui_Form(object):
                 self.data.img_and_price[name]=[0,'']
                 self.data.img_and_price[name][0]=price
                 self.data.img_and_price[name][1]=str(new)
+                self.data.exit_save()
                 self.stackedWidget.setCurrentIndex(2)
             else:
                 self.message.setText("there is another carpet with this name please enter new name")
@@ -342,7 +343,7 @@ class Ui_Form(object):
         self.message.setStandardButtons(QMessageBox.Ok)
         self.message.show()
         self.message.buttonClicked.connect(self.message.close)
-
+        self.data.exit_save()
         self.stackedWidget.setCurrentIndex(6)
         self.listWidget_4.clear()
         self.listWidget_5.clear()
@@ -475,6 +476,7 @@ class Ui_Form(object):
         self.lineEdit_11.clear()
         self.lineEdit_12.clear()
         self.lineEdit_13.clear()
+        self.data.exit_save()
         self.stackedWidget.setCurrentIndex(2)
       
     def delete_edit(self):
@@ -501,6 +503,7 @@ class Ui_Form(object):
             self.message.buttonClicked.connect(self.message.close)
             
     def finish_deleting(self):
+        self.data.exit_save()
         self.stackedWidget.setCurrentIndex(2)
         
     def edit(self):
@@ -1361,6 +1364,9 @@ class Ui_Form(object):
         self.pushButton_11.clicked.connect(self.yse_save)
         self.pushButton_12.clicked.connect(self.no_save)
         self.pushButton_13.clicked.connect(self.ok_enter_price_name)
+        
+#         Form.destroyed.connect(self.closeE)
+        
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
@@ -1441,6 +1447,10 @@ class Ui_Form(object):
         self.label_49.setText(_translate("Form", "price"))
         self.label_50.setText(_translate("Form", "price"))
         self.pushButton_31.setText(_translate("Form", "ok"))
+        
+    def closeE(self):
+        del self.data
+        Form.close()
 
 
 
@@ -1453,6 +1463,7 @@ if __name__ == "__main__":
         ui = Ui_Form()
         ui.setupUi(Form)
         Form.show()
+        
         sys.exit(app.exec_())
     except Exception as e:
         print(e)
